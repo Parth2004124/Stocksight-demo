@@ -120,8 +120,36 @@ function renderCard(sym, data, isCached = false) {
         decision.summary = calculateScoreActionMapper(fScore.total, fundTiming, conviction, isHeld);
     }
 
+    // Feature: Remember initial analyzed price and targets to prevent them from moving with spot price
+    if (!portfolio[sym].analyzedPrice && data.price > 0 && fScore) {
+        portfolio[sym].analyzedPrice = data.price;
+        portfolio[sym].analyzedLevels = calculateMoreshwarLevels(data.price, fScore, pScore, isHeld);
+        portfolio[sym].analyzedAction = decision.action;
+    }
+
+    // If we have saved analysis levels, use them for the UI instead of recalculating based on live fluctuations
+    let displayLevels = portfolio[sym].analyzedLevels || calculateMoreshwarLevels(data.price, fScore, pScore, isHeld);
+    let originalPrice = portfolio[sym].analyzedPrice || data.price;
+    let didFreeze = !!portfolio[sym].analyzedPrice;
+
+    // Custom Moreshwar Block using Frozen Data
+    let moreshwarBlock = `<div class="mt-2 pt-2 border-t border-gray-100 flex justify-between items-center text-[10px] font-mono text-gray-600 bg-gray-50/50 p-2 rounded relative">`;
+    if (didFreeze) moreshwarBlock += `<span class="absolute -top-2 right-1 bg-white px-1 text-[8px] text-blue-400 font-sans italic border border-blue-100 rounded">Analysis Locked @ ₹${originalPrice.toLocaleString()}</span>`;
+
+    const showFor = ['BUY NOW', 'SIP ONLY', 'ADD', 'AVOID', 'WAIT'];
+    if (isHeld || showFor.includes(portfolio[sym].analyzedAction || decision.action)) {
+        if (isHeld) {
+            moreshwarBlock += `<div class="flex flex-col"><span class="text-[8px] text-gray-400 uppercase">Target (Y+X)</span><span class="font-bold text-green-600">₹${displayLevels.target?.toLocaleString() || '--'}</span></div><div class="flex flex-col text-right"><span class="text-[8px] text-gray-400 uppercase">Stop-loss (Base-Risk)</span><span class="font-bold text-red-600">₹${displayLevels.sl?.toLocaleString() || '--'}</span></div>`;
+        } else {
+            let dAction = portfolio[sym].analyzedAction || decision.action;
+            let label = "Target Entry"; let valColor = "text-blue-600";
+            if (dAction === 'AVOID' || dAction === 'WAIT') { label = "Avoid Till"; valColor = "text-orange-500"; }
+            moreshwarBlock += `<div class="flex flex-col w-full text-center"><span class="text-[8px] text-gray-400 uppercase">${label}</span><span class="font-bold ${valColor}">₹${displayLevels.entry?.toLocaleString() || '--'}</span></div>`;
+        }
+    }
+    moreshwarBlock += `</div>`;
+
     const decisionBlock = getDecisionBlock(decision, confidence);
-    const moreshwarBlock = getMoreshwarBlock(data.price, fScore, pScore, isHeld, decision.action);
 
     const rsColor = rsScore > 0 ? 'text-green-600' : (rsScore < 0 ? 'text-red-600' : 'text-gray-400');
     const rsSign = rsScore > 0 ? '+' : '';
@@ -235,7 +263,7 @@ function renderCard(sym, data, isCached = false) {
         returns: data.returns, technicals: data.technicals,
         action: decision.action,
         explanation: fScore?.explanation,
-        levels: calculateMoreshwarLevels(data.price, fScore, pScore, isHeld)
+        levels: displayLevels
     };
     if (!isCached) saveState(true);
 
