@@ -7,10 +7,29 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .bg-maroon { background-color: #800000; }
-        .text-maroon { color: #800000; }
+        body { font-family: 'Inter', sans-serif; background-color: #FFFAFA; }
+        .bg-navy { background-color: #000080; }
+        .text-navy { color: #000080; }
     </style>
+
+    <!-- Tailwind Config for Snow White & Navy -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              navy: '#000080',
+              snow: '#FFFAFA',
+              gray: {
+                50: '#FFFAFA',
+                100: '#F5F5F7', // slightly off-white for contrast
+              },
+              white: '#FFFAFA'
+            }
+          }
+        }
+      }
+    </script>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4 bg-gray-100">
 
@@ -32,13 +51,13 @@
             </div>
 
             <button onclick="enterApp()" 
-                class="w-full bg-maroon hover:bg-red-900 text-white font-bold py-3 rounded-lg transition-all shadow-md hover:shadow-lg flex justify-center items-center gap-2 active:scale-95">
+                class="w-full bg-navy hover:bg-blue-950 text-white font-bold py-3 rounded-lg transition-all shadow-md hover:shadow-lg flex justify-center items-center gap-2 active:scale-95">
                 <span>Enter Terminal</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
             </button>
             
             <div class="text-center">
-                <a href="https://Parth2004124.github.io/StockSight/user%20manual.html" target="_blank" class="text-xs text-maroon hover:underline font-semibold">Read User Manual</a>
+                <a href="https://Parth2004124.github.io/StockSight/user%20manual.html" target="_blank" class="text-xs text-navy hover:underline font-semibold">Read User Manual</a>
             </div>
         </div>
         

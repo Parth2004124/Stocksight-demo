@@ -14,10 +14,29 @@
         .prose strong { color: #111827; font-weight: 600; }
         .prose ul { list-style-type: disc; padding-left: 1.5em; margin-top: 0.5em; }
         .prose li { margin-bottom: 0.5em; }
-        .bg-maroon { background-color: #800000; }
-        .text-maroon { color: #800000; }
-        .border-maroon { border-color: #800000; }
+        .bg-navy { background-color: #000080; }
+        .text-navy { color: #000080; }
+        .border-navy { border-color: #000080; }
     </style>
+
+    <!-- Tailwind Config for Snow White & Navy -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              navy: '#000080',
+              snow: '#FFFAFA',
+              gray: {
+                50: '#FFFAFA',
+                100: '#F5F5F7', // slightly off-white for contrast
+              },
+              white: '#FFFAFA'
+            }
+          }
+        }
+      }
+    </script>
 </head>
 <body class="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
 
@@ -25,7 +44,7 @@
         
         <!-- Navigation Header -->
         <div class="bg-gray-50 border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10 bg-opacity-95 backdrop-blur-sm">
-            <a href="welcome.html" class="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-maroon transition-colors group">
+            <a href="welcome.html" class="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-navy transition-colors group">
                 <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Back to Home
             </a>
@@ -48,7 +67,7 @@
             <h2>2. Getting Started</h2>
             
             <h3>Accessing the App</h3>
-            <p>Open <code>welcome.html</code> in your browser. Click the <span class="inline-block bg-maroon text-white text-xs px-2 py-0.5 rounded font-bold">Enter Terminal</span> button to load the main dashboard.</p>
+            <p>Open <code>welcome.html</code> in your browser. Click the <span class="inline-block bg-navy text-white text-xs px-2 py-0.5 rounded font-bold">Enter Terminal</span> button to load the main dashboard.</p>
 
             <h3>The Interface</h3>
             <ul class="text-gray-600 text-sm">

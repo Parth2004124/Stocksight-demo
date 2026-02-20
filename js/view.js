@@ -333,7 +333,7 @@ function renderWatchlistItem(sym, isLoading) {
         container.insertBefore(item, container.firstChild);
     }
     item.innerHTML = isLoading ? 
-        `<div><span class="text-sm font-semibold">${cleanSym}</span></div><div class="loader w-3 h-3 border-gray-300 border-t-maroon"></div>` : 
+        `<div><span class="text-sm font-semibold">${cleanSym}</span></div><div class="loader w-3 h-3 border-gray-300 border-t-navy"></div>` : 
         `<div><span class="mr-2 text-xs opacity-50">${icon}</span><span class="text-sm font-semibold">${cleanSym}</span></div><div class="text-right"><span class="font-mono text-sm">${price}</span><button onclick="event.stopPropagation(); removeStock('${sym}')" class="delete-btn opacity-0 group-hover:opacity-100 text-[10px] text-red-500 uppercase ml-2">Del</button></div>`;
 }
 
