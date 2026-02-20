@@ -61,19 +61,21 @@ function getMoreshwarBlock(price, fScore, pScore, isHolding, decisionAction) {
 
 // --- MAIN RENDERING FUNCTIONS ---
 
-function renderCard(sym, data, isCached = false) {
-    // Relies on global portfolio/stockAnalysis defined in app.js
+// Relies on global portfolio/stockAnalysis defined in app.js
+window.renderCard = function (sym, data, isCached = false, isNewAnalysis = false) {
+    if (!portfolio[sym]) return;
     const qty = portfolio[sym].qty || 0;
     const isHeld = qty > 0;
     const targetContainerId = isHeld ? 'view-portfolio' : 'view-watchlist';
     const container = document.getElementById(targetContainerId);
+    if (!container) return;
 
     let card = document.getElementById(`card-${sym}`);
     if (!card) {
         card = document.createElement('div');
         card.id = `card-${sym}`;
         container.appendChild(card);
-    } else if (card.parentElement.id !== targetContainerId) {
+    } else if (card.parentElement && card.parentElement.id !== targetContainerId) {
         container.appendChild(card);
     }
 
