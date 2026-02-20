@@ -77,19 +77,27 @@ function renderCard(sym, data, isCached = false) {
         container.appendChild(card);
     }
 
-    let signal = "HOLD", sigClass = "signal-hold", typeBadge = "badge-stock", metricsHTML = "";
-    let sourceTag = data.source === 'Google' ? `<span class="badge-gfin text-[9px] px-1 rounded ml-1">G-FIN</span>` : "";
-    const cleanSym = cleanTicker(sym);
-
-    // Calculate Scores (Using logic.js functions)
-    let fScore = calculateFundamentalScore(data);
-    if (fScore) {
-        fScore = normalizeFundamentalScore(fScore, data);
+    if (!data || !data.type) {
+        renderErrorCard(sym, "Invalid Data");
+        return;
     }
 
+    const cleanSym = cleanTicker(sym);
+
+    // Calculate Scores & UI Elements
+    const rawFScore = calculateFundamentalScore(data);
     const pScore = calculatePortersScore(data);
-    const tScore = calculateTrajectoryScore(data);
     const rsScore = calculateRelativeStrength(data);
+    const tScore = calculateTrajectoryScore(data);
+
+    let fScore;
+    if (rawFScore) {
+        fScore = normalizeFundamentalScore(rawFScore, data);
+    }
+
+    let signal = "N/A", sigClass = "signal-gray", typeBadge = "badge-etf", metricsHTML = "";
+    let sourceTag = data.source === 'Google' ? `<span class="badge-gfin text-[9px] px-1 rounded ml-1">G-FIN</span>` : "";
+    let longTermLabel = "";
 
     // Boost & Normalize Logic
     if (fScore) {
@@ -100,9 +108,6 @@ function renderCard(sym, data, isCached = false) {
             fScore.total = Math.max(0, Math.min(99, rawTotal));
         }
     }
-
-    const viewMode = cardViews[sym] || 'fundamental';
-    let longTermLabel = "";
 
     const conviction = calculateConviction(fScore, pScore);
     const convictionBadge = getConvictionBadge(conviction);
@@ -120,8 +125,11 @@ function renderCard(sym, data, isCached = false) {
         decision.summary = calculateScoreActionMapper(fScore.total, fundTiming, conviction, isHeld);
     }
 
+    const viewMode = cardViews[sym] || 'fundamental';
+
     // Feature: Remember initial analyzed price and targets to prevent them from moving with spot price
-    if (!portfolio[sym].analyzedPrice && data.price > 0 && fScore) {
+    // ONLY freeze the price if it's a NEW analysis (i.e., not a local cache render)
+    if (!portfolio[sym].analyzedPrice && data.price > 0 && fScore && isNewAnalysis) {
         portfolio[sym].analyzedPrice = data.price;
         portfolio[sym].analyzedLevels = calculateMoreshwarLevels(data.price, fScore, pScore, isHeld);
         portfolio[sym].analyzedState = isHeld ? 'HELD' : 'WATCH';
