@@ -124,7 +124,15 @@ function renderCard(sym, data, isCached = false) {
     if (!portfolio[sym].analyzedPrice && data.price > 0 && fScore) {
         portfolio[sym].analyzedPrice = data.price;
         portfolio[sym].analyzedLevels = calculateMoreshwarLevels(data.price, fScore, pScore, isHeld);
+        portfolio[sym].analyzedState = isHeld ? 'HELD' : 'WATCH';
         portfolio[sym].analyzedAction = decision.action;
+    } else if (portfolio[sym].analyzedPrice) {
+        // If they bought/sold the stock, we must recalculate the targets/sl using the LOCKED price
+        const currentState = isHeld ? 'HELD' : 'WATCH';
+        if (portfolio[sym].analyzedState !== currentState) {
+            portfolio[sym].analyzedLevels = calculateMoreshwarLevels(portfolio[sym].analyzedPrice, fScore, pScore, isHeld);
+            portfolio[sym].analyzedState = currentState;
+        }
     }
 
     // If we have saved analysis levels, use them for the UI instead of recalculating based on live fluctuations
