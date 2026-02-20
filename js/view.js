@@ -27,7 +27,7 @@ function getFundamentalTimingBadge(label) {
 function getDecisionBlock(decision, confidence) {
     const colors = { 'BUY NOW': 'bg-green-50 border-green-200 text-green-800', 'ADD': 'bg-emerald-50 border-emerald-200 text-emerald-800', 'SIP ONLY': 'bg-blue-50 border-blue-200 text-blue-800', 'HOLD': 'bg-indigo-50 border-indigo-200 text-indigo-800', 'WAIT': 'bg-orange-50 border-orange-200 text-orange-800', 'REVIEW': 'bg-yellow-50 border-yellow-200 text-yellow-800', 'REDUCE': 'bg-amber-50 border-amber-200 text-amber-800', 'EXIT': 'bg-red-50 border-red-200 text-red-800', 'AVOID': 'bg-slate-50 border-slate-200 text-slate-600' };
     const colorClass = colors[decision.action] || 'bg-gray-50 border-gray-200';
-    
+
     // Confidence Style
     const confColors = { 'High': 'text-green-600', 'Medium': 'text-yellow-600', 'Low': 'text-red-600' };
     const confColor = confColors[confidence] || 'text-gray-400';
@@ -49,11 +49,11 @@ function getMoreshwarBlock(price, fScore, pScore, isHolding, decisionAction) {
     if (!isHolding && !showFor.includes(decisionAction)) return '';
     const levels = calculateMoreshwarLevels(price, fScore, pScore, isHolding);
     let html = `<div class="mt-2 pt-2 border-t border-gray-100 flex justify-between items-center text-[10px] font-mono text-gray-600 bg-gray-50/50 p-2 rounded">`;
-    if (isHolding) { html += `<div class="flex flex-col"><span class="text-[8px] text-gray-400 uppercase">Target (Y+X)</span><span class="font-bold text-green-600">₹${levels.target.toLocaleString()}</span></div><div class="flex flex-col text-right"><span class="text-[8px] text-gray-400 uppercase">Stop-loss (Price-Risk)</span><span class="font-bold text-red-600">₹${levels.sl.toLocaleString()}</span></div>`; } 
-    else { 
+    if (isHolding) { html += `<div class="flex flex-col"><span class="text-[8px] text-gray-400 uppercase">Target (Y+X)</span><span class="font-bold text-green-600">₹${levels.target.toLocaleString()}</span></div><div class="flex flex-col text-right"><span class="text-[8px] text-gray-400 uppercase">Stop-loss (Price-Risk)</span><span class="font-bold text-red-600">₹${levels.sl.toLocaleString()}</span></div>`; }
+    else {
         let label = "Entry Price"; let valColor = "text-blue-600";
         if (decisionAction === 'AVOID' || decisionAction === 'WAIT') { label = "Avoid Till"; valColor = "text-orange-500"; }
-        html += `<div class="flex flex-col w-full text-center"><span class="text-[8px] text-gray-400 uppercase">${label}</span><span class="font-bold ${valColor}">₹${levels.entry.toLocaleString()}</span></div>`; 
+        html += `<div class="flex flex-col w-full text-center"><span class="text-[8px] text-gray-400 uppercase">${label}</span><span class="font-bold ${valColor}">₹${levels.entry.toLocaleString()}</span></div>`;
     }
     html += `</div>`;
     return html;
@@ -67,7 +67,7 @@ function renderCard(sym, data, isCached = false) {
     const isHeld = qty > 0;
     const targetContainerId = isHeld ? 'view-portfolio' : 'view-watchlist';
     const container = document.getElementById(targetContainerId);
-    
+
     let card = document.getElementById(`card-${sym}`);
     if (!card) {
         card = document.createElement('div');
@@ -90,20 +90,20 @@ function renderCard(sym, data, isCached = false) {
     const pScore = calculatePortersScore(data);
     const tScore = calculateTrajectoryScore(data);
     const rsScore = calculateRelativeStrength(data);
-    
+
     // Boost & Normalize Logic
     if (fScore) {
         let rawTotal = fScore.total + tScore + rsScore;
         if (data.type === 'ETF' || data.type === 'FUND') {
-              fScore.total = calculateNormalizedScore(rawTotal);
+            fScore.total = calculateNormalizedScore(rawTotal);
         } else {
-              fScore.total = Math.max(0, Math.min(99, rawTotal));
+            fScore.total = Math.max(0, Math.min(99, rawTotal));
         }
     }
 
     const viewMode = cardViews[sym] || 'fundamental';
     let longTermLabel = "";
-    
+
     const conviction = calculateConviction(fScore, pScore);
     const convictionBadge = getConvictionBadge(conviction);
     const trajectory = calculateTrajectory(data);
@@ -119,16 +119,16 @@ function renderCard(sym, data, isCached = false) {
     if (fScore) {
         decision.summary = calculateScoreActionMapper(fScore.total, fundTiming, conviction, isHeld);
     }
-    
+
     const decisionBlock = getDecisionBlock(decision, confidence);
     const moreshwarBlock = getMoreshwarBlock(data.price, fScore, pScore, isHeld, decision.action);
 
     const rsColor = rsScore > 0 ? 'text-green-600' : (rsScore < 0 ? 'text-red-600' : 'text-gray-400');
     const rsSign = rsScore > 0 ? '+' : '';
 
-    if(data.type === 'STOCK' && fScore) {
+    if (data.type === 'STOCK' && fScore) {
         typeBadge = "badge-stock";
-        
+
         if (fScore.total >= 65) { signal = "BUY"; sigClass = "signal-buy"; }
         else if (fScore.total <= 40) { signal = "SELL"; sigClass = "signal-sell"; }
 
@@ -193,18 +193,18 @@ function renderCard(sym, data, isCached = false) {
 
     } else if (fScore) {
         signal = "SIP"; sigClass = "signal-sip";
-        if (fScore.total > 70) signal = "BUY"; 
-        
+        if (fScore.total > 70) signal = "BUY";
+
         if (qty === 0) {
-             if (signal === "SIP") { signal = "TRACK"; sigClass = "signal-gray"; }
+            if (signal === "SIP") { signal = "TRACK"; sigClass = "signal-gray"; }
         }
 
         typeBadge = data.type === 'ETF' ? "badge-etf" : "badge-fund";
         const isMF = data.type === 'FUND';
-        
-        let l1="Returns", l2="Momentum", l3="Trend", l4="Safety";
-        if(data.explanation === "Trend Strength") { l1="Trend"; l2="Momentum"; l3="Strength"; l4="Support"; }
-        else if(isMF) { l1="1Y Ret"; l2="3Y Ret"; l3="5Y Ret"; l4="Trend"; }
+
+        let l1 = "Returns", l2 = "Momentum", l3 = "Trend", l4 = "Safety";
+        if (data.explanation === "Trend Strength") { l1 = "Trend"; l2 = "Momentum"; l3 = "Strength"; l4 = "Support"; }
+        else if (isMF) { l1 = "1Y Ret"; l2 = "3Y Ret"; l3 = "5Y Ret"; l4 = "Trend"; }
 
         metricsHTML = `
             <div class="space-y-3">
@@ -224,12 +224,12 @@ function renderCard(sym, data, isCached = false) {
                 ${moreshwarBlock}
             </div>`;
     } else {
-         metricsHTML = ``; 
-         signal = "N/A"; sigClass = "signal-gray";
+        metricsHTML = ``;
+        signal = "N/A"; sigClass = "signal-gray";
     }
 
-    stockAnalysis[sym] = { 
-        signal, name: data.name, price: data.price, type: data.type, 
+    stockAnalysis[sym] = {
+        signal, name: data.name, price: data.price, type: data.type,
         pe: data.pe, growth: data.growth, profitGrowth: data.profitGrowth, opm: data.opm,
         roe: data.roe, mcap: data.mcap, roce: data.roce, beta: data.beta, source: data.source,
         returns: data.returns, technicals: data.technicals,
@@ -237,7 +237,7 @@ function renderCard(sym, data, isCached = false) {
         explanation: fScore?.explanation,
         levels: calculateMoreshwarLevels(data.price, fScore, pScore, isHeld)
     };
-    if(!isCached) saveState(true); 
+    if (!isCached) saveState(true);
 
     const savedQty = portfolio[sym].qty || '';
     const savedAvg = portfolio[sym].avg || '';
@@ -254,10 +254,6 @@ function renderCard(sym, data, isCached = false) {
                     <div class="flex gap-2 mt-1 items-center flex-wrap">
                         <span class="text-[10px] font-mono text-gray-500 bg-gray-100 px-1 rounded">${cleanSym}</span>
                         <span class="text-[10px] px-1 rounded font-bold ${typeBadge}">${data.type}</span>
-                        ${convictionBadge}
-                        ${fundTimingBadge}
-                        ${trajectoryBadge}
-                        ${timingBadge}
                         ${sourceTag}
                         ${mcBtn}
                     </div>
@@ -283,8 +279,8 @@ function renderCard(sym, data, isCached = false) {
             
             ${metricsHTML}
         </div>`;
-    
-    if(!isCached) {
+
+    if (!isCached) {
         renderWatchlistItem(sym, false);
         updateCardPnL(sym);
         calculateTotals();
@@ -297,8 +293,8 @@ function renderCard(sym, data, isCached = false) {
 function switchCardTab(sym, mode) {
     cardViews[sym] = mode;
     if (stockAnalysis[sym]) {
-        renderCard(sym, stockAnalysis[sym], false); 
-        saveState(false); 
+        renderCard(sym, stockAnalysis[sym], false);
+        saveState(false);
     }
 }
 
@@ -318,22 +314,22 @@ function renderWatchlistItem(sym, isLoading) {
     let item = document.getElementById(`wl-${sym}`);
     const price = livePrices[sym] ? `₹${livePrices[sym].toLocaleString()}` : '--';
     const qty = portfolio[sym].qty || 0;
-    const icon = qty > 0 ? '💼' : '👁️'; 
+    const icon = qty > 0 ? '💼' : '👁️';
     const cleanSym = cleanTicker(sym);
 
     if (!item) {
         item = document.createElement('div');
         item.id = `wl-${sym}`;
         item.className = "watchlist-item p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer flex justify-between items-center group transition-colors";
-        item.onclick = () => { 
+        item.onclick = () => {
             const targetTab = portfolio[sym].qty > 0 ? 'portfolio' : 'watchlist';
             switchTab(targetTab);
-            setTimeout(() => document.getElementById(`card-${sym}`)?.scrollIntoView({behavior:'smooth'}), 50); 
+            setTimeout(() => document.getElementById(`card-${sym}`)?.scrollIntoView({ behavior: 'smooth' }), 50);
         };
         container.insertBefore(item, container.firstChild);
     }
-    item.innerHTML = isLoading ? 
-        `<div><span class="text-sm font-semibold">${cleanSym}</span></div><div class="loader w-3 h-3 border-gray-300 border-t-navy"></div>` : 
+    item.innerHTML = isLoading ?
+        `<div><span class="text-sm font-semibold">${cleanSym}</span></div><div class="loader w-3 h-3 border-gray-300 border-t-navy"></div>` :
         `<div><span class="mr-2 text-xs opacity-50">${icon}</span><span class="text-sm font-semibold">${cleanSym}</span></div><div class="text-right"><span class="font-mono text-sm">${price}</span><button onclick="event.stopPropagation(); removeStock('${sym}')" class="delete-btn opacity-0 group-hover:opacity-100 text-[10px] text-red-500 uppercase ml-2">Del</button></div>`;
 }
 
@@ -349,20 +345,20 @@ function renderErrorCard(sym, msg) {
     }
     card.innerHTML = `<div class="flex flex-col items-center justify-center h-full p-6 text-center"><span class="text-red-400 font-bold mb-1">Failed</span><span class="text-xs text-gray-400 mb-4 break-words w-full px-4">${msg || "Proxy Error"}</span><button onclick="fetchAsset('${sym}')" class="px-3 py-1 bg-white border border-red-200 text-red-500 text-xs rounded hover:bg-red-50 mb-2">Retry</button><button onclick="removeStock('${sym}')" class="text-xs text-gray-400 underline">Remove</button></div>`;
     const item = document.getElementById(`wl-${sym}`);
-    if(item) item.innerHTML = `<span class="text-sm font-semibold text-gray-400">${cleanTicker(sym)}</span><span class="text-xs text-red-500">Error</span>`;
+    if (item) item.innerHTML = `<span class="text-sm font-semibold text-gray-400">${cleanTicker(sym)}</span><span class="text-xs text-red-500">Error</span>`;
 }
 
-function updateCardPnL(sym) { 
-    if(!portfolio[sym] || !livePrices[sym]) return; 
-    const qty = portfolio[sym].qty; 
-    const avg = portfolio[sym].avg; 
-    const cur = livePrices[sym]; 
-    const pnl = (qty * cur) - (qty * avg); 
-    const el = document.getElementById(`pnl-${sym}`); 
-    if(el) { 
-        el.innerText = `₹${Math.round(pnl).toLocaleString()}`; 
-        el.className = `font-bold text-xs ${pnl >= 0 ? 'text-green-600' : 'text-red-500'}`; 
-    } 
+function updateCardPnL(sym) {
+    if (!portfolio[sym] || !livePrices[sym]) return;
+    const qty = portfolio[sym].qty;
+    const avg = portfolio[sym].avg;
+    const cur = livePrices[sym];
+    const pnl = (qty * cur) - (qty * avg);
+    const el = document.getElementById(`pnl-${sym}`);
+    if (el) {
+        el.innerText = `₹${Math.round(pnl).toLocaleString()}`;
+        el.className = `font-bold text-xs ${pnl >= 0 ? 'text-green-600' : 'text-red-500'}`;
+    }
 }
 
 function updateViewCounts() {
@@ -375,19 +371,19 @@ function updateViewCounts() {
     document.getElementById('watchlist-count').innerText = `${Object.keys(portfolio).length} / 50`;
     document.getElementById('badge-port-count').innerText = portCount;
     document.getElementById('badge-watch-count').innerText = watchCount;
-    
+
     document.getElementById('portfolio-empty').style.display = portCount === 0 ? 'flex' : 'none';
     document.getElementById('watchlist-empty').style.display = watchCount === 0 ? 'flex' : 'none';
 }
 
-function renderSignalSummary() { 
+function renderSignalSummary() {
     // Uses portfolioAnalytics from logic.js
     const healthEl = document.getElementById('analytics-health');
     const allocEl = document.getElementById('analytics-allocation');
     const perfEl = document.getElementById('analytics-performance');
-    const actionsEl = document.getElementById('analytics-actions'); 
+    const actionsEl = document.getElementById('analytics-actions');
 
-    if(!portfolioAnalytics.totalValue) {
+    if (!portfolioAnalytics.totalValue) {
         healthEl.innerHTML = `<div class="text-center text-gray-400 text-xs">No Data</div>`;
         return;
     }
@@ -395,9 +391,9 @@ function renderSignalSummary() {
     // Health & Risk Column
     let healthColor = 'text-amber-600';
     let healthLabel = 'Neutral';
-    if(portfolioAnalytics.healthScore > 65) { healthColor = 'text-green-600'; healthLabel = 'Strong'; }
-    else if(portfolioAnalytics.healthScore < 40) { healthColor = 'text-red-600'; healthLabel = 'Weak'; }
-    
+    if (portfolioAnalytics.healthScore > 65) { healthColor = 'text-green-600'; healthLabel = 'Strong'; }
+    else if (portfolioAnalytics.healthScore < 40) { healthColor = 'text-red-600'; healthLabel = 'Weak'; }
+
     let riskHTML = '';
     if (portfolioAnalytics.risk.alerts && portfolioAnalytics.risk.alerts.length > 0) {
         riskHTML = `<div class="mt-3 w-full px-2 space-y-1 overflow-y-auto max-h-[80px] custom-scroll border-t border-amber-200/50 pt-2">
@@ -431,8 +427,8 @@ function renderSignalSummary() {
     let allocHTML = '<div class="w-full space-y-2 flex flex-col justify-center h-full px-2">';
     let total = portfolioAnalytics.totalValue;
     Object.entries(portfolioAnalytics.allocation).forEach(([key, val]) => {
-        let pct = Math.round((val/total)*100);
-        if(pct > 0) {
+        let pct = Math.round((val / total) * 100);
+        if (pct > 0) {
             allocHTML += `
                 <div class="flex items-center text-xs">
                     <span class="w-24 text-indigo-900 font-medium">${key}</span>
@@ -444,18 +440,18 @@ function renderSignalSummary() {
             `;
         }
     });
-    
+
     if (portfolioAnalytics.risk.sectors && portfolioAnalytics.risk.sectors.length > 0) {
         allocHTML += `<div class="mt-4 pt-3 border-t border-indigo-200/50"><p class="text-[9px] text-indigo-400 uppercase mb-2 font-bold tracking-wider">Top Exposures</p>`;
         portfolioAnalytics.risk.sectors.forEach(([ind, val]) => {
-            let sPct = Math.round((val/total)*100);
+            let sPct = Math.round((val / total) * 100);
             if (sPct > 5) {
                 allocHTML += `<div class="flex justify-between text-[10px] text-indigo-800 mb-1"><span>${ind}</span><span class="font-mono text-indigo-600 font-bold">${sPct}%</span></div>`;
             }
         });
         allocHTML += `</div>`;
     }
-    
+
     allocHTML += '</div>';
     allocEl.innerHTML = allocHTML;
 
@@ -463,7 +459,7 @@ function renderSignalSummary() {
     const totalPnL = parseFloat(document.getElementById('total-pnl').innerText.replace(/[^0-9.-]/g, ''));
     const pnlPct = total > 0 ? (totalPnL / (total - totalPnL)) * 100 : 0;
     const pnlColor = totalPnL >= 0 ? 'text-emerald-600' : 'text-rose-600';
-    
+
     let effHTML = '';
     if (portfolioAnalytics.efficiency && portfolioAnalytics.efficiency.length > 0) {
         effHTML = `<div class="mt-auto w-full pt-3 border-t border-emerald-100/50"><p class="text-[9px] text-emerald-800/60 uppercase mb-1 text-center font-bold tracking-wider">Efficiency Check</p>`;
@@ -492,14 +488,14 @@ function renderSignalSummary() {
     // Actions Card Logic
     let actionsList = [];
     Object.values(stockAnalysis).forEach(data => {
-       if (data.action === 'BUY NOW') {
-           let reason = (data.explanation || "").split(' ').slice(0,3).join(' ');
-           let entry = data.levels?.entry || data.price;
-           actionsList.push({ type: 'buy', text: `Buy ${data.name}`, sub: `@ ₹${entry.toLocaleString()}`, reason: reason });
-       } else if (data.action === 'EXIT') {
-           let reason = (data.explanation || "").split(' ').slice(0,3).join(' ');
-           actionsList.push({ type: 'sell', text: `Sell ${data.name}`, sub: `@ ₹${data.price.toLocaleString()}`, reason: reason });
-       }
+        if (data.action === 'BUY NOW') {
+            let reason = (data.explanation || "").split(' ').slice(0, 3).join(' ');
+            let entry = data.levels?.entry || data.price;
+            actionsList.push({ type: 'buy', text: `Buy ${data.name}`, sub: `@ ₹${entry.toLocaleString()}`, reason: reason });
+        } else if (data.action === 'EXIT') {
+            let reason = (data.explanation || "").split(' ').slice(0, 3).join(' ');
+            actionsList.push({ type: 'sell', text: `Sell ${data.name}`, sub: `@ ₹${data.price.toLocaleString()}`, reason: reason });
+        }
     });
 
     if (actionsList.length === 0) {
@@ -526,7 +522,7 @@ function renderSignalSummary() {
 
 function updateCloudStatus(status, text) {
     const el = document.getElementById('cloud-status');
-    if(!el) return;
+    if (!el) return;
     let color = 'bg-gray-400';
     if (status === 'loading') color = 'bg-yellow-400 animate-pulse';
     if (status === 'success') color = 'bg-green-500';
@@ -537,13 +533,13 @@ function updateCloudStatus(status, text) {
 function updateReqCount() {
     const el = document.getElementById('requestCounter');
     // activeRequests is global in app.js
-    if(el && typeof activeRequests !== 'undefined') el.style.display = activeRequests > 0 ? 'block' : 'none';
+    if (el && typeof activeRequests !== 'undefined') el.style.display = activeRequests > 0 ? 'block' : 'none';
 }
 
 function toggleSupportView() {
     const summaryView = document.getElementById('view-summary');
     const supportView = document.getElementById('view-support');
-    
+
     if (summaryView.classList.contains('hidden')) {
         summaryView.classList.remove('hidden');
         supportView.classList.add('hidden');
@@ -559,10 +555,10 @@ function toggleStocky() {
     const panel = document.getElementById('stocky-panel');
     if (panel.classList.contains('hidden')) {
         panel.classList.remove('hidden');
-        setTimeout(() => panel.classList.remove('opacity-0', 'scale-95'), 10); 
+        setTimeout(() => panel.classList.remove('opacity-0', 'scale-95'), 10);
     } else {
         panel.classList.add('opacity-0', 'scale-95');
-        setTimeout(() => panel.classList.add('hidden'), 300); 
+        setTimeout(() => panel.classList.add('hidden'), 300);
     }
 }
 
@@ -570,12 +566,12 @@ function addStockyMessage(sender, text) {
     const container = document.getElementById('stocky-messages');
     const div = document.createElement('div');
     div.className = "flex items-start gap-2 " + (sender === 'user' ? "flex-row-reverse" : "");
-    
-    let avatar = sender === 'user' ? 
+
+    let avatar = sender === 'user' ?
         `<div class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs">U</div>` :
         `<div class="w-6 h-6 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-xs border border-violet-200">S</div>`;
-        
-    let bubbleClass = sender === 'user' ? 
+
+    let bubbleClass = sender === 'user' ?
         "bg-violet-600 text-white rounded-tl-xl rounded-bl-xl rounded-br-xl" :
         "bg-white border border-gray-100 text-gray-600 rounded-tr-xl rounded-bl-xl rounded-br-xl shadow-sm";
 
