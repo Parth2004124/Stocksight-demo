@@ -267,6 +267,28 @@ function renderCard(sym, data, isCached = false) {
     };
     if (!isCached) saveState(true);
 
+    // Feature: Push Notification if Target/Entry hit
+    if (!portfolio[sym].notified) {
+        portfolio[sym].notified = {};
+    }
+
+    if (displayLevels && data.price > 0) {
+        if (isHeld) {
+            if (displayLevels.target && data.price >= displayLevels.target && !portfolio[sym].notified.target) {
+                showToast(`🎯 TARGET HIT: ${data.name} crossed ₹${displayLevels.target.toLocaleString()}`, 'success');
+                portfolio[sym].notified.target = true;
+            } else if (displayLevels.sl && data.price <= displayLevels.sl && !portfolio[sym].notified.sl) {
+                showToast(`⚠️ STOP-LOSS ALERT: ${data.name} dropped below ₹${displayLevels.sl.toLocaleString()}`, 'error');
+                portfolio[sym].notified.sl = true;
+            }
+        } else {
+            if (displayLevels.entry && data.price <= displayLevels.entry && !portfolio[sym].notified.entry) {
+                showToast(`✅ ENTRY ALERT: ${data.name} reached buy zone ₹${displayLevels.entry.toLocaleString()}`, 'success');
+                portfolio[sym].notified.entry = true;
+            }
+        }
+    }
+
     const savedQty = portfolio[sym].qty || '';
     const savedAvg = portfolio[sym].avg || '';
     const opacityClass = isCached ? 'updating' : '';
