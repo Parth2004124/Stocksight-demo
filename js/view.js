@@ -8,7 +8,7 @@ function getConvictionBadge(label) {
 
 function getTrajectoryBadge(label) {
     if (!label) return '';
-    const styles = { 'Improving': 'bg-indigo-100 text-indigo-800 border-indigo-200', 'Flat': 'bg-gray-100 text-gray-600 border-gray-200', 'Deteriorating': 'bg-orange-100 text-orange-800 border-orange-200' };
+    const styles = { 'Improving': 'bg-indigo-100 text-indigo-800 border-indigo-200', 'Flat': 'bg-[#020617] text-slate-300 border-gray-200', 'Deteriorating': 'bg-orange-100 text-orange-800 border-orange-200' };
     return `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded border ${styles[label]} uppercase tracking-wider mx-1">${label}</span>`;
 }
 
@@ -26,21 +26,21 @@ function getFundamentalTimingBadge(label) {
 
 function getDecisionBlock(decision, confidence) {
     const colors = { 'BUY NOW': 'bg-green-50 border-green-200 text-green-800', 'ADD': 'bg-emerald-50 border-emerald-200 text-emerald-800', 'SIP ONLY': 'bg-blue-50 border-blue-200 text-blue-800', 'HOLD': 'bg-indigo-50 border-indigo-200 text-indigo-800', 'WAIT': 'bg-orange-50 border-orange-200 text-orange-800', 'REVIEW': 'bg-yellow-50 border-yellow-200 text-yellow-800', 'REDUCE': 'bg-amber-50 border-amber-200 text-amber-800', 'EXIT': 'bg-red-50 border-red-200 text-red-800', 'AVOID': 'bg-slate-50 border-slate-200 text-slate-600' };
-    const colorClass = colors[decision.action] || 'bg-gray-50 border-gray-200';
+    const colorClass = colors[decision.action] || 'bg-[#1e293b] border-gray-200';
 
     // Confidence Style
     const confColors = { 'High': 'text-green-600', 'Medium': 'text-yellow-600', 'Low': 'text-red-600' };
-    const confColor = confColors[confidence] || 'text-gray-400';
+    const confColor = confColors[confidence] || 'text-slate-500';
 
     return `<div class="mt-3 pt-3 border-t border-dashed border-gray-200">
         <div class="flex items-center justify-between mb-1">
             <div class="flex items-center gap-2">
-                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Final Verdict</span>
+                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Final Verdict</span>
                 <span class="text-[8px] font-mono ${confColor}" title="Data Confidence">(${confidence} Conf.)</span>
             </div>
             <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${colorClass}">${decision.action}</span>
         </div>
-        <p class="text-[10px] text-gray-500 italic leading-relaxed">"${decision.summary}"</p>
+        <p class="text-[10px] text-slate-400 italic leading-relaxed">"${decision.summary}"</p>
     </div>`;
 }
 
@@ -48,12 +48,12 @@ function getMoreshwarBlock(price, fScore, pScore, isHolding, decisionAction) {
     const showFor = ['BUY NOW', 'SIP ONLY', 'ADD', 'AVOID', 'WAIT'];
     if (!isHolding && !showFor.includes(decisionAction)) return '';
     const levels = calculateMoreshwarLevels(price, fScore, pScore, isHolding);
-    let html = `<div class="mt-2 pt-2 border-t border-gray-100 flex justify-between items-center text-[10px] font-mono text-gray-600 bg-gray-50/50 p-2 rounded">`;
-    if (isHolding) { html += `<div class="flex flex-col"><span class="text-[8px] text-gray-400 uppercase">Target (Y+X)</span><span class="font-bold text-green-600">₹${levels.target.toLocaleString()}</span></div><div class="flex flex-col text-right"><span class="text-[8px] text-gray-400 uppercase">Stop-loss (Price-Risk)</span><span class="font-bold text-red-600">₹${levels.sl.toLocaleString()}</span></div>`; }
+    let html = `<div class="mt-2 pt-2 border-t border-gray-100 flex justify-between items-center text-[10px] font-mono text-slate-300 bg-[#1e293b]/50 p-2 rounded">`;
+    if (isHolding) { html += `<div class="flex flex-col"><span class="text-[8px] text-slate-500 uppercase">Target (Y+X)</span><span class="font-bold text-green-600">₹${levels.target.toLocaleString()}</span></div><div class="flex flex-col text-right"><span class="text-[8px] text-slate-500 uppercase">Stop-loss (Price-Risk)</span><span class="font-bold text-red-600">₹${levels.sl.toLocaleString()}</span></div>`; }
     else {
         let label = "Entry Price"; let valColor = "text-blue-600";
         if (decisionAction === 'AVOID' || decisionAction === 'WAIT') { label = "Avoid Till"; valColor = "text-orange-500"; }
-        html += `<div class="flex flex-col w-full text-center"><span class="text-[8px] text-gray-400 uppercase">${label}</span><span class="font-bold ${valColor}">₹${levels.entry.toLocaleString()}</span></div>`;
+        html += `<div class="flex flex-col w-full text-center"><span class="text-[8px] text-slate-500 uppercase">${label}</span><span class="font-bold ${valColor}">₹${levels.entry.toLocaleString()}</span></div>`;
     }
     html += `</div>`;
     return html;
@@ -151,25 +151,25 @@ window.renderCard = function (sym, data, isCached = false, isNewAnalysis = false
     let didFreeze = !!portfolio[sym].analyzedPrice;
 
     // Custom Moreshwar Block using Frozen Data
-    let moreshwarBlock = `<div class="mt-2 pt-2 border-t border-gray-100 flex justify-between items-center text-[10px] font-mono text-gray-600 bg-gray-50/50 p-2 rounded relative">`;
-    if (didFreeze) moreshwarBlock += `<span class="absolute -top-2 right-1 bg-white px-1 text-[8px] text-blue-400 font-sans italic border border-blue-100 rounded">Analysis Locked @ ₹${originalPrice.toLocaleString()}</span>`;
+    let moreshwarBlock = `<div class="mt-2 pt-2 border-t border-gray-100 flex justify-between items-center text-[10px] font-mono text-slate-300 bg-[#1e293b]/50 p-2 rounded relative">`;
+    if (didFreeze) moreshwarBlock += `<span class="absolute -top-2 right-1 bg-[#0f172a] px-1 text-[8px] text-blue-400 font-sans italic border border-blue-100 rounded">Analysis Locked @ ₹${originalPrice.toLocaleString()}</span>`;
 
     const showFor = ['BUY NOW', 'SIP ONLY', 'ADD', 'AVOID', 'WAIT'];
     if (isHeld || showFor.includes(portfolio[sym].analyzedAction || decision.action)) {
         if (isHeld) {
-            moreshwarBlock += `<div class="flex flex-col"><span class="text-[8px] text-gray-400 uppercase">Target (Y+X)</span><span class="font-bold text-green-600">₹${displayLevels.target?.toLocaleString() || '--'}</span></div><div class="flex flex-col text-right"><span class="text-[8px] text-gray-400 uppercase">Stop-loss (Base-Risk)</span><span class="font-bold text-red-600">₹${displayLevels.sl?.toLocaleString() || '--'}</span></div>`;
+            moreshwarBlock += `<div class="flex flex-col"><span class="text-[8px] text-slate-500 uppercase">Target (Y+X)</span><span class="font-bold text-green-600">₹${displayLevels.target?.toLocaleString() || '--'}</span></div><div class="flex flex-col text-right"><span class="text-[8px] text-slate-500 uppercase">Stop-loss (Base-Risk)</span><span class="font-bold text-red-600">₹${displayLevels.sl?.toLocaleString() || '--'}</span></div>`;
         } else {
             let dAction = portfolio[sym].analyzedAction || decision.action;
             let label = "Target Entry"; let valColor = "text-blue-600";
             if (dAction === 'AVOID' || dAction === 'WAIT') { label = "Avoid Till"; valColor = "text-orange-500"; }
-            moreshwarBlock += `<div class="flex flex-col w-full text-center"><span class="text-[8px] text-gray-400 uppercase">${label}</span><span class="font-bold ${valColor}">₹${displayLevels.entry?.toLocaleString() || '--'}</span></div>`;
+            moreshwarBlock += `<div class="flex flex-col w-full text-center"><span class="text-[8px] text-slate-500 uppercase">${label}</span><span class="font-bold ${valColor}">₹${displayLevels.entry?.toLocaleString() || '--'}</span></div>`;
         }
     }
     moreshwarBlock += `</div>`;
 
     const decisionBlock = getDecisionBlock(decision, confidence);
 
-    const rsColor = rsScore > 0 ? 'text-green-600' : (rsScore < 0 ? 'text-red-600' : 'text-gray-400');
+    const rsColor = rsScore > 0 ? 'text-green-600' : (rsScore < 0 ? 'text-red-600' : 'text-slate-500');
     const rsSign = rsScore > 0 ? '+' : '';
 
     if (data.type === 'STOCK' && fScore) {
@@ -205,12 +205,12 @@ window.renderCard = function (sym, data, isCached = false, isNewAnalysis = false
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2 text-[10px]">
-                        <div class="bg-gray-50 p-1.5 rounded"><span class="text-gray-400 block">Business</span><span class="font-bold text-gray-700">${fScore.business}/40</span></div>
-                        <div class="bg-gray-50 p-1.5 rounded"><span class="text-gray-400 block">Moat</span><span class="font-bold text-gray-700">${fScore.moat}/20</span></div>
-                        <div class="bg-gray-50 p-1.5 rounded"><span class="text-gray-400 block">Mgmt</span><span class="font-bold text-gray-700">${fScore.management}/20</span></div>
-                        <div class="bg-gray-50 p-1.5 rounded"><span class="text-gray-400 block">Risk</span><span class="font-bold text-gray-700">${fScore.risk}/20</span></div>
-                        <div class="bg-indigo-50 p-1.5 rounded"><span class="text-gray-400 block">Trajectory</span><span class="font-bold text-indigo-700">+${tScore}</span></div>
-                        <div class="bg-gray-50 p-1.5 rounded"><span class="text-gray-400 block">Rel Strength</span><span class="font-bold ${rsColor}">${rsSign}${rsScore}</span></div>
+                        <div class="bg-[#1e293b] p-1.5 rounded"><span class="text-slate-500 block">Business</span><span class="font-bold text-slate-200">${fScore.business}/40</span></div>
+                        <div class="bg-[#1e293b] p-1.5 rounded"><span class="text-slate-500 block">Moat</span><span class="font-bold text-slate-200">${fScore.moat}/20</span></div>
+                        <div class="bg-[#1e293b] p-1.5 rounded"><span class="text-slate-500 block">Mgmt</span><span class="font-bold text-slate-200">${fScore.management}/20</span></div>
+                        <div class="bg-[#1e293b] p-1.5 rounded"><span class="text-slate-500 block">Risk</span><span class="font-bold text-slate-200">${fScore.risk}/20</span></div>
+                        <div class="bg-indigo-50 p-1.5 rounded"><span class="text-slate-500 block">Trajectory</span><span class="font-bold text-indigo-700">+${tScore}</span></div>
+                        <div class="bg-[#1e293b] p-1.5 rounded"><span class="text-slate-500 block">Rel Strength</span><span class="font-bold ${rsColor}">${rsSign}${rsScore}</span></div>
                     </div>
                     ${decisionBlock}
                     ${moreshwarBlock}
@@ -226,11 +226,11 @@ window.renderCard = function (sym, data, isCached = false, isNewAnalysis = false
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2 text-[10px]">
-                        <div class="bg-blue-50 p-1.5 rounded"><span class="text-gray-400 block">Barriers</span><span class="font-bold text-blue-800">${pScore.entrants}/20</span></div>
-                        <div class="bg-blue-50 p-1.5 rounded"><span class="text-gray-400 block">Suppliers</span><span class="font-bold text-blue-800">${pScore.suppliers}/20</span></div>
-                        <div class="bg-blue-50 p-1.5 rounded"><span class="text-gray-400 block">Buyers</span><span class="font-bold text-blue-800">${pScore.buyers}/20</span></div>
-                        <div class="bg-blue-50 p-1.5 rounded"><span class="text-gray-400 block">Substitutes</span><span class="font-bold text-blue-800">${pScore.substitutes}/20</span></div>
-                        <div class="col-span-2 bg-blue-50 p-1.5 rounded flex justify-between"><span class="text-gray-400">Competitive Rivalry</span><span class="font-bold text-blue-800">${pScore.rivalry}/20</span></div>
+                        <div class="bg-blue-50 p-1.5 rounded"><span class="text-slate-500 block">Barriers</span><span class="font-bold text-blue-800">${pScore.entrants}/20</span></div>
+                        <div class="bg-blue-50 p-1.5 rounded"><span class="text-slate-500 block">Suppliers</span><span class="font-bold text-blue-800">${pScore.suppliers}/20</span></div>
+                        <div class="bg-blue-50 p-1.5 rounded"><span class="text-slate-500 block">Buyers</span><span class="font-bold text-blue-800">${pScore.buyers}/20</span></div>
+                        <div class="bg-blue-50 p-1.5 rounded"><span class="text-slate-500 block">Substitutes</span><span class="font-bold text-blue-800">${pScore.substitutes}/20</span></div>
+                        <div class="col-span-2 bg-blue-50 p-1.5 rounded flex justify-between"><span class="text-slate-500">Competitive Rivalry</span><span class="font-bold text-blue-800">${pScore.rivalry}/20</span></div>
                     </div>
                     ${decisionBlock}
                     ${moreshwarBlock}
@@ -261,10 +261,10 @@ window.renderCard = function (sym, data, isCached = false, isNewAnalysis = false
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 text-[10px]">
-                    <div class="bg-gray-50 p-1.5 rounded"><span class="text-gray-400 block">${l1}</span><span class="font-bold text-gray-700">${fScore.business}/40</span></div>
-                    <div class="bg-gray-50 p-1.5 rounded"><span class="text-gray-400 block">${l2}</span><span class="font-bold text-gray-700">${fScore.moat}/20</span></div>
-                    <div class="bg-gray-50 p-1.5 rounded"><span class="text-gray-400 block">${l3}</span><span class="font-bold text-gray-700">${fScore.management}/20</span></div>
-                    <div class="bg-gray-50 p-1.5 rounded"><span class="text-gray-400 block">${l4}</span><span class="font-bold text-gray-700">${fScore.risk}/20</span></div>
+                    <div class="bg-[#1e293b] p-1.5 rounded"><span class="text-slate-500 block">${l1}</span><span class="font-bold text-slate-200">${fScore.business}/40</span></div>
+                    <div class="bg-[#1e293b] p-1.5 rounded"><span class="text-slate-500 block">${l2}</span><span class="font-bold text-slate-200">${fScore.moat}/20</span></div>
+                    <div class="bg-[#1e293b] p-1.5 rounded"><span class="text-slate-500 block">${l3}</span><span class="font-bold text-slate-200">${fScore.management}/20</span></div>
+                    <div class="bg-[#1e293b] p-1.5 rounded"><span class="text-slate-500 block">${l4}</span><span class="font-bold text-slate-200">${fScore.risk}/20</span></div>
                 </div>
                 ${decisionBlock}
                 ${moreshwarBlock}
@@ -313,14 +313,14 @@ window.renderCard = function (sym, data, isCached = false, isNewAnalysis = false
 
     const mcBtn = `<a href="https://www.google.com/search?q=${encodeURIComponent(data.name + " moneycontrol news")}" target="_blank" class="text-[9px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 rounded ml-1 hover:bg-emerald-100 transition-colors cursor-pointer" title="MoneyControl News" onclick="event.stopPropagation()">MC News</a>`;
 
-    card.className = `bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden min-h-[340px] flex flex-col relative ${opacityClass}`;
+    card.className = `bg-[#0f172a] rounded-lg border border-gray-200 shadow-sm overflow-hidden min-h-[340px] flex flex-col relative ${opacityClass}`;
     card.innerHTML = `
         <div class="p-5 flex flex-col h-full">
             <div class="flex justify-between items-start mb-2">
                 <div class="overflow-hidden">
-                    <h3 class="font-bold text-gray-800 text-lg leading-tight truncate w-40" title="${data.name}">${data.name}</h3>
+                    <h3 class="font-bold text-slate-100 text-lg leading-tight truncate w-40" title="${data.name}">${data.name}</h3>
                     <div class="flex gap-2 mt-1 items-center flex-wrap">
-                        <span class="text-[10px] font-mono text-gray-500 bg-gray-100 px-1 rounded">${cleanSym}</span>
+                        <span class="text-[10px] font-mono text-slate-400 bg-[#020617] px-1 rounded">${cleanSym}</span>
                         <span class="text-[10px] px-1 rounded font-bold ${typeBadge}">${data.type}</span>
                         ${sourceTag}
                         ${mcBtn}
@@ -328,21 +328,21 @@ window.renderCard = function (sym, data, isCached = false, isNewAnalysis = false
                 </div>
                 <div class="flex flex-col items-end">
                     <div class="text-[10px] font-bold px-2 py-1 rounded border ${sigClass}">${signal}</div>
-                    <span class="text-[9px] text-gray-400 mt-1 italic w-20 text-right leading-tight">${fScore?.explanation || ''}</span>
+                    <span class="text-[9px] text-slate-500 mt-1 italic w-20 text-right leading-tight">${fScore?.explanation || ''}</span>
                     ${longTermLabel}
                 </div>
             </div>
 
             <div class="flex justify-between items-end pb-3 border-b border-gray-100 mb-3">
-                <p class="text-2xl font-bold text-gray-800">₹${data.price.toLocaleString()}</p>
+                <p class="text-2xl font-bold text-slate-100">₹${data.price.toLocaleString()}</p>
             </div>
 
-            <div class="bg-gray-50 rounded border border-gray-100 p-2 mb-3">
+            <div class="bg-[#1e293b] rounded border border-gray-100 p-2 mb-3">
                 <div class="flex gap-2 mb-1">
-                    <div class="flex-1"><label class="text-[9px] text-gray-500 uppercase block mb-1">Qty</label><input type="number" class="portfolio-input" placeholder="0" value="${savedQty}" onchange="updateHolding('${sym}', 'qty', this.value)"></div>
-                    <div class="flex-1"><label class="text-[9px] text-gray-500 uppercase block mb-1">Avg</label><input type="number" class="portfolio-input" placeholder="₹" value="${savedAvg}" onchange="updateHolding('${sym}', 'avg', this.value)"></div>
+                    <div class="flex-1"><label class="text-[9px] text-slate-400 uppercase block mb-1">Qty</label><input type="number" class="portfolio-input" placeholder="0" value="${savedQty}" onchange="updateHolding('${sym}', 'qty', this.value)"></div>
+                    <div class="flex-1"><label class="text-[9px] text-slate-400 uppercase block mb-1">Avg</label><input type="number" class="portfolio-input" placeholder="₹" value="${savedAvg}" onchange="updateHolding('${sym}', 'avg', this.value)"></div>
                 </div>
-                <div class="flex justify-between items-center text-xs pt-1"><span class="text-gray-400">P&L:</span><span id="pnl-${sym}" class="font-bold text-gray-300">--</span></div>
+                <div class="flex justify-between items-center text-xs pt-1"><span class="text-slate-500">P&L:</span><span id="pnl-${sym}" class="font-bold text-gray-300">--</span></div>
             </div>
             
             ${metricsHTML}
@@ -372,8 +372,8 @@ function createCardSkeleton(sym) {
     const grid = document.getElementById(containerId);
     const card = document.createElement('div');
     card.id = `card-${sym}`;
-    card.className = "bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden min-h-[300px] relative";
-    card.innerHTML = `<div class="absolute inset-0 flex flex-col items-center justify-center z-10 bg-white/80"><div class="loader mb-2"></div><p class="text-xs text-gray-400">Loading ${cleanTicker(sym)}...</p></div>`;
+    card.className = "bg-[#0f172a] rounded-lg border border-gray-200 shadow-sm overflow-hidden min-h-[300px] relative";
+    card.innerHTML = `<div class="absolute inset-0 flex flex-col items-center justify-center z-10 bg-[#0f172a]/80"><div class="loader mb-2"></div><p class="text-xs text-slate-500">Loading ${cleanTicker(sym)}...</p></div>`;
     grid.insertBefore(card, grid.firstChild);
 }
 
@@ -388,7 +388,7 @@ function renderWatchlistItem(sym, isLoading) {
     if (!item) {
         item = document.createElement('div');
         item.id = `wl-${sym}`;
-        item.className = "watchlist-item p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer flex justify-between items-center group transition-colors";
+        item.className = "watchlist-item p-3 border-b border-gray-100 hover:bg-[#1e293b] cursor-pointer flex justify-between items-center group transition-colors";
         item.onclick = () => {
             const targetTab = portfolio[sym].qty > 0 ? 'portfolio' : 'watchlist';
             switchTab(targetTab);
@@ -411,9 +411,9 @@ function renderErrorCard(sym, msg) {
         card.id = `card-${sym}`;
         container.appendChild(card);
     }
-    card.innerHTML = `<div class="flex flex-col items-center justify-center h-full p-6 text-center"><span class="text-red-400 font-bold mb-1">Failed</span><span class="text-xs text-gray-400 mb-4 break-words w-full px-4">${msg || "Proxy Error"}</span><button onclick="fetchAsset('${sym}')" class="px-3 py-1 bg-white border border-red-200 text-red-500 text-xs rounded hover:bg-red-50 mb-2">Retry</button><button onclick="removeStock('${sym}')" class="text-xs text-gray-400 underline">Remove</button></div>`;
+    card.innerHTML = `<div class="flex flex-col items-center justify-center h-full p-6 text-center"><span class="text-red-400 font-bold mb-1">Failed</span><span class="text-xs text-slate-500 mb-4 break-words w-full px-4">${msg || "Proxy Error"}</span><button onclick="fetchAsset('${sym}')" class="px-3 py-1 bg-[#0f172a] border border-red-200 text-red-500 text-xs rounded hover:bg-red-50 mb-2">Retry</button><button onclick="removeStock('${sym}')" class="text-xs text-slate-500 underline">Remove</button></div>`;
     const item = document.getElementById(`wl-${sym}`);
-    if (item) item.innerHTML = `<span class="text-sm font-semibold text-gray-400">${cleanTicker(sym)}</span><span class="text-xs text-red-500">Error</span>`;
+    if (item) item.innerHTML = `<span class="text-sm font-semibold text-slate-500">${cleanTicker(sym)}</span><span class="text-xs text-red-500">Error</span>`;
 }
 
 function updateCardPnL(sym) {
@@ -452,7 +452,7 @@ function renderSignalSummary() {
     const actionsEl = document.getElementById('analytics-actions');
 
     if (!portfolioAnalytics.totalValue) {
-        healthEl.innerHTML = `<div class="text-center text-gray-400 text-xs">No Data</div>`;
+        healthEl.innerHTML = `<div class="text-center text-slate-500 text-xs">No Data</div>`;
         return;
     }
 
@@ -472,7 +472,7 @@ function renderSignalSummary() {
     }
 
     const sensitivity = portfolioAnalytics.risk.sensitivity || 'Moderate';
-    const sensColor = sensitivity === 'Aggressive' ? 'text-red-500' : (sensitivity === 'Defensive' ? 'text-blue-500' : 'text-gray-500');
+    const sensColor = sensitivity === 'Aggressive' ? 'text-red-500' : (sensitivity === 'Defensive' ? 'text-blue-500' : 'text-slate-400');
 
     healthEl.innerHTML = `
         <div class="flex flex-col items-center justify-center h-full pt-4 pb-4">
@@ -486,7 +486,7 @@ function renderSignalSummary() {
                     <span class="text-[9px] uppercase text-amber-900/60">Diversity</span>
                 </div>
             </div>
-            <div class="text-[10px] font-semibold border px-2 py-0.5 rounded ${sensColor} border-amber-200 bg-white mb-2">${sensitivity} Profile</div>
+            <div class="text-[10px] font-semibold border px-2 py-0.5 rounded ${sensColor} border-amber-200 bg-[#0f172a] mb-2">${sensitivity} Profile</div>
             ${riskHTML}
         </div>
     `;
@@ -535,7 +535,7 @@ function renderSignalSummary() {
             let color = 'text-emerald-800';
             if (item.type === 'bad') color = 'text-rose-600';
             if (item.type === 'good') color = 'text-emerald-600';
-            effHTML += `<div class="text-[9px] ${color} text-center mb-0.5 bg-white/50 rounded py-0.5 px-1 leading-tight" title="${item.text}">${item.text}</div>`;
+            effHTML += `<div class="text-[9px] ${color} text-center mb-0.5 bg-[#0f172a]/50 rounded py-0.5 px-1 leading-tight" title="${item.text}">${item.text}</div>`;
         });
         effHTML += `</div>`;
     } else if (total > 0) {
@@ -636,12 +636,12 @@ function addStockyMessage(sender, text) {
     div.className = "flex items-start gap-2 " + (sender === 'user' ? "flex-row-reverse" : "");
 
     let avatar = sender === 'user' ?
-        `<div class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs">U</div>` :
+        `<div class="w-6 h-6 rounded-full bg-gray-200 text-slate-400 flex items-center justify-center text-xs">U</div>` :
         `<div class="w-6 h-6 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-xs border border-violet-200">S</div>`;
 
     let bubbleClass = sender === 'user' ?
         "bg-violet-600 text-white rounded-tl-xl rounded-bl-xl rounded-br-xl" :
-        "bg-white border border-gray-100 text-gray-600 rounded-tr-xl rounded-bl-xl rounded-br-xl shadow-sm";
+        "bg-[#0f172a] border border-gray-100 text-slate-300 rounded-tr-xl rounded-bl-xl rounded-br-xl shadow-sm";
 
     div.innerHTML = `
         ${avatar}

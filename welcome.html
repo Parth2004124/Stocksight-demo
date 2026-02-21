@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,62 +8,95 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #FFFAFA; }
-        .bg-navy { background-color: #000080; }
-        .text-navy { color: #000080; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFFAFA;
+        }
+
+        .bg-blue-600 {
+            background-color: #000080;
+        }
+
+        .text-white {
+            color: #000080;
+        }
     </style>
 
     <!-- Tailwind Config for Snow White & Navy -->
     <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              navy: '#000080',
-              snow: '#FFFAFA',
-              gray: {
-                50: '#FFFAFA',
-                100: '#F5F5F7', // slightly off-white for contrast
-              },
-              white: '#FFFAFA'
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: '#000080',
+                        snow: '#FFFAFA',
+                        gray: {
+                            50: '#FFFAFA',
+                            100: '#F5F5F7', // slightly off-white for contrast
+                        },
+                        white: '#FFFAFA'
+                    }
+                }
             }
-          }
         }
-      }
     </script>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4 bg-gray-100">
 
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200">
+<body class="flex items-center justify-center min-h-screen p-4 bg-[#020617]">
+
+    <div class="bg-[#0f172a] rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-slate-800">
         <!-- Header -->
-        <div class="bg-gray-50 p-8 text-center border-b border-gray-100">
-            <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100">
-                <span class="text-3xl">📈</span>
-            </div>
-            <h1 class="text-2xl font-bold text-gray-800 tracking-tight">StockSight Cloud</h1>
-            <p class="text-sm text-gray-500 mt-2">Personal Portfolio Intelligence</p>
+        <div class="bg-[#1e293b] p-8 text-center border-b border-slate-800">
+            <svg viewBox="0 0 100 100" class="w-10 h-10 drop-shadow-lg">
+                <defs>
+                    <radialGradient id="s3" cx="40%" cy="30%" r="60%">
+                        <stop offset="0%" stop-color="#334155" />
+                        <stop offset="50%" stop-color="#0f172a" />
+                        <stop offset="100%" stop-color="#020617" />
+                    </radialGradient>
+                    <filter id="g3">
+                        <feGaussianBlur stdDeviation="2" result="c3" />
+                        <feMerge>
+                            <feMergeNode in="c3" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
+                </defs>
+                <circle cx="50" cy="50" r="45" fill="url(#s3)" />
+                <path d="M 15 25 A 40 40 0 0 0 15 75" stroke="#1e293b" stroke-width="2" fill="none" />
+                <path d="M 85 25 A 40 40 0 0 1 85 75" stroke="#1e293b" stroke-width="2" fill="none" />
+                <circle cx="50" cy="50" r="28" fill="#020617" stroke="#1e293b" stroke-width="1.5" />
+                <rect x="36" y="47" width="8" height="3" rx="1.5" fill="#38bdf8" filter="url(#g3)" />
+                <rect x="56" y="47" width="8" height="3" rx="1.5" fill="#38bdf8" filter="url(#g3)" />
+            </svg>
+            <h1 class="text-2xl font-bold text-slate-100 tracking-tight">StockSight Cloud</h1>
+            <p class="text-sm text-slate-400 mt-2">Personal Portfolio Intelligence</p>
         </div>
 
         <!-- Entry Area -->
         <div class="p-8 space-y-6">
-            <div class="text-center text-gray-600 text-sm leading-relaxed">
+            <div class="text-center text-slate-300 text-sm leading-relaxed">
                 Welcome to your personal terminal. <br>
                 Analyze stocks, track your portfolio, and consult with Stocky AI.
             </div>
 
-            <button onclick="enterApp()" 
-                class="w-full bg-navy hover:bg-blue-950 text-white font-bold py-3 rounded-lg transition-all shadow-md hover:shadow-lg flex justify-center items-center gap-2 active:scale-95">
+            <button onclick="enterApp()"
+                class="w-full bg-blue-600 hover:bg-blue-950 text-white font-bold py-3 rounded-lg transition-all shadow-md hover:shadow-lg flex justify-center items-center gap-2 active:scale-95">
                 <span>Enter Terminal</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3">
+                    </path>
+                </svg>
             </button>
-            
+
             <div class="text-center">
-                <a href="https://Parth2004124.github.io/StockSight/user%20manual.html" target="_blank" class="text-xs text-navy hover:underline font-semibold">Read User Manual</a>
+                <a href="https://Parth2004124.github.io/StockSight/user%20manual.html" target="_blank"
+                    class="text-xs text-white hover:underline font-semibold">Read User Manual</a>
             </div>
         </div>
-        
-        <div class="bg-gray-50 p-4 text-center border-t border-gray-100">
-            <p class="text-[10px] text-gray-400">StockSight System • v2.1</p>
+
+        <div class="bg-[#1e293b] p-4 text-center border-t border-slate-800">
+            <p class="text-[10px] text-slate-500">StockSight System • v2.1</p>
         </div>
     </div>
 
@@ -72,15 +106,16 @@
 
         function enterApp() {
             const btn = document.querySelector('button');
-            
+
             // Loading Animation
             btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
             btn.classList.add('opacity-80', 'cursor-not-allowed');
-            
+
             setTimeout(() => {
                 window.location.href = TARGET_PAGE;
             }, 500);
         }
     </script>
 </body>
+
 </html>

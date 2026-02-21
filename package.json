@@ -1,0 +1,21 @@
+{
+  "name": "stocksight-version-2",
+  "version": "1.0.0",
+  "description": "StockSight Cloud - User Manual",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Parth2004124/stocksight-version-2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Parth2004124/stocksight-version-2/issues"
+  },
+  "homepage": "https://github.com/Parth2004124/stocksight-version-2#readme"
+}
