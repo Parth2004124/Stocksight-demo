@@ -1,10 +1,10 @@
 // --- STOCKY INTELLIGENCE MODULE ---
 
 // Local state for the bot - PERSISTENT CONTEXT
-let stockyContext = { 
-    lastAsset: null,       
-    lastIntent: null,      
-    lastAllocation: null   
+let stockyContext = {
+    lastAsset: null,
+    lastIntent: null,
+    lastAllocation: null
 };
 
 // Main Handler called by the UI
@@ -12,11 +12,11 @@ async function handleStockyMessage() {
     const input = document.getElementById('stocky-input');
     const msg = input.value.trim();
     if (!msg) return;
-    
+
     // UI: Add User Message
     addStockyMessage('user', msg);
     input.value = '';
-    
+
     // Logic: Generate Response (Async allowed now)
     setTimeout(async () => {
         try {
@@ -56,15 +56,15 @@ function normalizeText(text) {
 
 function mapQueryToIntent(query) {
     const rawQ = query.toLowerCase();
-    const q = normalizeText(rawQ); 
-    
+    const q = normalizeText(rawQ);
+
     // 1. Identify Known Assets
     const knownAssets = Object.keys(stockAnalysis).filter(sym => {
         const s = sym.toLowerCase();
         const n = stockAnalysis[sym].name.toLowerCase();
         return new RegExp(`\\b${s}\\b`).test(rawQ) || rawQ.includes(n);
     });
-    
+
     if (knownAssets.length > 0) {
         if (knownAssets.length === 1) stockyContext.lastAsset = knownAssets[0];
     }
@@ -91,9 +91,9 @@ function mapQueryToIntent(query) {
         let intentData = { asset: targetAsset };
         if (q.includes('target') || q.includes('level')) intentData.focus = 'LEVELS';
         else if (q.includes('risk')) intentData.focus = 'RISK';
-        else if (q.includes('score') || q.includes('why') || q.includes('porter') || q.includes('fundamental')) intentData.focus = 'SCORE'; 
-        else if (q.includes('buy') || q.includes('sell')) intentData.focus = 'SIGNAL'; 
-        
+        else if (q.includes('score') || q.includes('why') || q.includes('porter') || q.includes('fundamental')) intentData.focus = 'SCORE';
+        else if (q.includes('buy') || q.includes('sell')) intentData.focus = 'SIGNAL';
+
         return { type: 'EXPLAIN', ...intentData };
     }
 
@@ -119,7 +119,7 @@ function mapQueryToIntent(query) {
     // 6. ALLOCATION SIM
     const numberPattern = /[\d,]+(\.\d+)?\s*(k|l|cr|m|b|lakh|crore)?/i;
     const allocKeywords = ['allocate', 'invest', 'have', 'capital', 'fund'];
-    
+
     if (allocKeywords.some(k => q.includes(k)) && numberPattern.test(rawQ)) {
         const amtMatch = rawQ.match(/(\d+(?:,\d+)*(?:\.\d+)?)\s*(k|l|cr|m|b|lakh|crore)?/i);
         if (amtMatch) {
@@ -130,7 +130,7 @@ function mapQueryToIntent(query) {
             else if (unit.startsWith('c')) val *= 10000000;
             else if (unit.startsWith('m')) val *= 1000000;
             else if (unit.startsWith('b')) val *= 1000000000;
-            const reqAssets = knownAssets.length > 0 ? knownAssets : []; 
+            const reqAssets = knownAssets.length > 0 ? knownAssets : [];
             return { type: 'ALLOCATION_SIM', amount: val, assets: reqAssets };
         }
     }
@@ -144,10 +144,10 @@ function mapQueryToIntent(query) {
 function simulateCapitalAllocation(amount, specificAssets) {
     let candidates = [];
     if (specificAssets.length > 0) {
-         candidates = specificAssets.map(sym => ({ sym, ...stockAnalysis[sym] })).filter(c => c.price > 0);
+        candidates = specificAssets.map(sym => ({ sym, ...stockAnalysis[sym] })).filter(c => c.price > 0);
     } else {
-         candidates = Object.entries(stockAnalysis).map(([sym, data]) => ({ sym, ...data })).filter(d => d.price > 0 && d.action === 'BUY NOW'); 
-         if (candidates.length === 0) candidates = Object.entries(stockAnalysis).map(([sym, data]) => ({ sym, ...data })).filter(d => d.price > 0 && calculateFundamentalScore(d)?.total > 60);
+        candidates = Object.entries(stockAnalysis).map(([sym, data]) => ({ sym, ...data })).filter(d => d.price > 0 && d.action === 'BUY NOW');
+        if (candidates.length === 0) candidates = Object.entries(stockAnalysis).map(([sym, data]) => ({ sym, ...data })).filter(d => d.price > 0 && calculateFundamentalScore(d)?.total > 60);
     }
 
     if (candidates.length === 0) return "I couldn't find any high-conviction assets to simulate an allocation for right now.";
@@ -155,7 +155,7 @@ function simulateCapitalAllocation(amount, specificAssets) {
     let totalScore = 0;
     candidates = candidates.map(c => {
         let fScore = calculateFundamentalScore(c);
-        if(fScore) fScore = normalizeFundamentalScore(fScore, c);
+        if (fScore) fScore = normalizeFundamentalScore(fScore, c);
         const score = fScore ? fScore.total : 50;
         totalScore += score;
         return { ...c, score };
@@ -168,14 +168,14 @@ function simulateCapitalAllocation(amount, specificAssets) {
         const allocAmt = amount * weight;
         const qty = Math.floor(allocAmt / c.price);
         const cost = qty * c.price;
-        if(qty > 0) {
-            result.push({ name: c.name, price: c.price, qty: qty, value: cost, weight: (weight*100).toFixed(1) });
+        if (qty > 0) {
+            result.push({ name: c.name, price: c.price, qty: qty, value: cost, weight: (weight * 100).toFixed(1) });
             used += cost;
         }
     });
 
     stockyContext.lastAllocation = {
-        topPicks: result.sort((a,b) => b.weight - a.weight).slice(0, 3),
+        topPicks: result.sort((a, b) => b.weight - a.weight).slice(0, 3),
         strategy: specificAssets.length > 0 ? "Specific Selection" : "Top Conviction Picks"
     };
 
@@ -203,7 +203,7 @@ function getFollowUpSuggestions(intentType, contextData) {
     } else if (intentType === 'FETCH_NEW') {
         suggestions = [`Score for ${contextData.symbol}`, `Buy or Sell ${contextData.symbol}?`];
     }
-    
+
     if (suggestions.length > 0) {
         return `\n\n<div class="mt-2 pt-2 border-t border-gray-100 flex flex-wrap gap-1">${suggestions.map(s => `<span class="cursor-pointer text-[9px] bg-violet-50 text-violet-600 px-2 py-1 rounded-full border border-violet-100 hover:bg-violet-100" onclick="document.getElementById('stocky-input').value='${s}'; handleStockyMessage()">${s}</span>`).join('')}</div>`;
     }
@@ -214,7 +214,7 @@ function getFollowUpSuggestions(intentType, contextData) {
 function formatExplanation(rawText, score) {
     if (!rawText) return "standard fundamental metrics";
     let text = rawText.replace(/\(.*\)/, '').trim(); // Remove (Sector) suffix
-    
+
     // Dictionary of raw explanations mapped to NEUTRAL concepts
     const map = {
         "Stable": "steady growth profile",
@@ -225,14 +225,14 @@ function formatExplanation(rawText, score) {
         "Sales Drag": "slowing top-line sales",
         "Trend Strength": "technical momentum"
     };
-    
+
     let baseText = map[text] || text.toLowerCase();
 
     // Contextual Adjustment based on Score
     if (score < 40 && text === "Stable") {
         return "stagnant growth (stability without upside)";
     }
-    
+
     return baseText;
 }
 
@@ -248,12 +248,12 @@ async function generateStockyResponse(query) {
             try {
                 if (typeof portfolio !== 'undefined' && !portfolio[sym]) {
                     portfolio[sym] = { qty: 0, avg: 0 };
-                    if (typeof switchTab === 'function') switchTab('watchlist'); 
+                    if (typeof switchTab === 'function') switchTab('watchlist');
                     if (typeof renderWatchlistItem === 'function') renderWatchlistItem(sym, true);
                     if (typeof createCardSkeleton === 'function') createCardSkeleton(sym);
                 }
                 if (typeof fetchAsset === 'function') {
-                    await fetchAsset(sym); 
+                    await fetchAsset(sym);
                 } else {
                     throw new Error("Data engine unavailable");
                 }
@@ -290,26 +290,36 @@ async function generateStockyResponse(query) {
             if (traps.length > 0) reply = `I found some inefficiencies:\n${traps.map(t => `- ${t.text}`).join('\n')}\n\nConsider reallocating capital.`;
             else reply = `Your capital deployment looks efficient. No major "Capital Traps" detected.`;
             break;
-            
+
         case 'ALLOCATION_SIM':
             reply = simulateCapitalAllocation(intent.amount, intent.assets);
             break;
 
         case 'EXPLAIN_ALLOCATION':
             const alloc = stockyContext.lastAllocation;
-            if(!alloc) reply = "I haven't generated an allocation yet.";
+            if (!alloc) reply = "I haven't generated an allocation yet.";
             else reply = `I used a <b>Score-Weighted Strategy</b>. Assets with higher scores like <b>${alloc.topPicks[0].name}</b> received more capital.`;
             break;
 
         case 'EXPLAIN':
             const symbol = intent.asset;
-            const data = stockAnalysis[symbol];
+            let data = stockAnalysis[symbol];
             if (!data) { reply = `I can't find data for ${symbol}.`; break; }
-            
+
+            // Use locked price and levels if available
+            if (typeof portfolio !== 'undefined' && portfolio[symbol] && portfolio[symbol].analyzedPrice) {
+                data = {
+                    ...data,
+                    price: portfolio[symbol].analyzedPrice,
+                    levels: portfolio[symbol].analyzedLevels || data.levels,
+                    action: portfolio[symbol].analyzedAction || data.action
+                };
+            }
+
             let fScore = calculateFundamentalScore(data);
             if (fScore) fScore = normalizeFundamentalScore(fScore, data);
-            const pScore = calculatePortersScore(data); 
-            
+            const pScore = calculatePortersScore(data);
+
             if (intent.focus === 'LEVELS' && data.levels) {
                 reply = `<b>Levels for ${data.name}:</b>\n🎯 Target: ₹${data.levels.target ? data.levels.target.toLocaleString() : 'N/A'}\n🛑 Stop/Entry: ₹${(data.levels.sl || data.levels.entry).toLocaleString()}`;
             } else if (intent.focus === 'RISK') {
@@ -319,7 +329,7 @@ async function generateStockyResponse(query) {
                 const score = fScore.total;
                 const reason = formatExplanation(data.explanation, score);
                 const action = data.action;
-                
+
                 // Porter Analysis
                 const porterVal = pScore ? pScore.total : 'N/A';
                 let porterText = "";
@@ -354,13 +364,13 @@ async function generateStockyResponse(query) {
             const d1 = stockAnalysis[symA];
             const d2 = stockAnalysis[symB];
             if (!d1 || !d2) { reply = "I need data for both assets."; break; }
-            
-            let s1 = calculateFundamentalScore(d1); if(s1) s1 = normalizeFundamentalScore(s1, d1);
-            let s2 = calculateFundamentalScore(d2); if(s2) s2 = normalizeFundamentalScore(s2, d2);
+
+            let s1 = calculateFundamentalScore(d1); if (s1) s1 = normalizeFundamentalScore(s1, d1);
+            let s2 = calculateFundamentalScore(d2); if (s2) s2 = normalizeFundamentalScore(s2, d2);
             let p1 = calculatePortersScore(d1);
             let p2 = calculatePortersScore(d2);
-            
-            reply = `<div class="font-bold mb-1">Comparison: ${d1.name} vs ${d2.name}</div><table class="w-full text-xs border border-gray-200 rounded"><tr class="bg-[#1e293b]"><th class="p-1 text-left">Metric</th><th class="p-1 text-right">${d1.name.substr(0,4)}</th><th class="p-1 text-right">${d2.name.substr(0,4)}</th></tr><tr class="border-t"><td class="p-1">Fundamental</td><td class="p-1 text-right font-bold">${s1.total}</td><td class="p-1 text-right font-bold">${s2.total}</td></tr><tr class="border-t"><td class="p-1">Porter's (Quality)</td><td class="p-1 text-right">${p1 ? p1.total : '-'}</td><td class="p-1 text-right">${p2 ? p2.total : '-'}</td></tr><tr class="border-t"><td class="p-1">Signal</td><td class="p-1 text-right">${d1.action}</td><td class="p-1 text-right">${d2.action}</td></tr></table><div class="mt-2 text-[10px] italic">System favors ${d1.action === 'BUY NOW' && d2.action !== 'BUY NOW' ? d1.name : (d2.action === 'BUY NOW' && d1.action !== 'BUY NOW' ? d2.name : "neither based on signal")}.</div>`;
+
+            reply = `<div class="font-bold mb-1">Comparison: ${d1.name} vs ${d2.name}</div><table class="w-full text-xs border border-gray-200 rounded"><tr class="bg-[#1e293b]"><th class="p-1 text-left">Metric</th><th class="p-1 text-right">${d1.name.substr(0, 4)}</th><th class="p-1 text-right">${d2.name.substr(0, 4)}</th></tr><tr class="border-t"><td class="p-1">Fundamental</td><td class="p-1 text-right font-bold">${s1.total}</td><td class="p-1 text-right font-bold">${s2.total}</td></tr><tr class="border-t"><td class="p-1">Porter's (Quality)</td><td class="p-1 text-right">${p1 ? p1.total : '-'}</td><td class="p-1 text-right">${p2 ? p2.total : '-'}</td></tr><tr class="border-t"><td class="p-1">Signal</td><td class="p-1 text-right">${d1.action}</td><td class="p-1 text-right">${d2.action}</td></tr></table><div class="mt-2 text-[10px] italic">System favors ${d1.action === 'BUY NOW' && d2.action !== 'BUY NOW' ? d1.name : (d2.action === 'BUY NOW' && d1.action !== 'BUY NOW' ? d2.name : "neither based on signal")}.</div>`;
             break;
 
         default:
