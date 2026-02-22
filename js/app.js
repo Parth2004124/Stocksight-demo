@@ -519,6 +519,30 @@ function removeStock(sym) {
     saveState();
 }
 
+window.unlockPrice = function (sym, event) {
+    if (event) event.stopPropagation();
+    if (!portfolio[sym]) return;
+
+    // Delete frozen analysis state
+    delete portfolio[sym].analyzedPrice;
+    delete portfolio[sym].analyzedLevels;
+    delete portfolio[sym].analyzedState;
+    delete portfolio[sym].analyzedAction;
+
+    saveState(true);
+
+    if (typeof showToast === 'function') {
+        showToast("Price unlocked. Fetching live spot data...", "success");
+    }
+
+    // Put it in loading state and refetch
+    const card = document.getElementById(`card-${sym}`);
+    if (card) {
+        card.classList.add('updating');
+    }
+    fetchAsset(sym);
+}
+
 function clearAll() {
     if (confirm("Clear All?")) {
         portfolio = {}; livePrices = {}; stockAnalysis = {};

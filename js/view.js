@@ -152,7 +152,7 @@ window.renderCard = function (sym, data, isCached = false, isNewAnalysis = false
 
     // Custom Moreshwar Block using Frozen Data
     let moreshwarBlock = `<div class="mt-2 pt-2 border-t border-gray-100 flex justify-between items-center text-[10px] font-mono text-slate-300 bg-[#1e293b]/50 p-2 rounded relative">`;
-    if (didFreeze) moreshwarBlock += `<span class="absolute -top-2 right-1 bg-[#0f172a] px-1 text-[8px] text-blue-400 font-sans italic border border-blue-100 rounded">Analysis Locked @ ₹${originalPrice.toLocaleString()}</span>`;
+    if (didFreeze) moreshwarBlock += `<div class="absolute -top-2 right-1 flex items-center bg-[#0f172a] border border-blue-100 rounded text-[8px] font-sans text-blue-400 overflow-hidden shadow-sm"><span class="px-1.5 py-0.5 italic">Locked @ ₹${originalPrice.toLocaleString()}</span><button onclick="unlockPrice('${sym}', event)" class="bg-blue-500 hover:bg-red-500 text-white px-1.5 py-0.5 transition-colors cursor-pointer" title="Unlock Price & Use Live Spot Price">✖</button></div>`;
 
     const showFor = ['BUY NOW', 'SIP ONLY', 'ADD', 'AVOID', 'WAIT'];
     if (isHeld || showFor.includes(portfolio[sym].analyzedAction || decision.action)) {

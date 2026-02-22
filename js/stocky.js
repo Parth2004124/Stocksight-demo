@@ -355,7 +355,13 @@ async function generateStockyResponse(query) {
 
                 let entryTxt = data.levels.entry ? `Look to enter around <b>₹${data.levels.entry.toLocaleString()}</b>.` : `Watch the stop loss at <b>₹${data.levels.sl.toLocaleString()}</b>.`;
 
-                reply = `<b>${data.name} Analysis</b>\n\nMy Verdict: <b>${action}</b>\n\n<b>Scores:</b>\n- Fundamental: <b>${score}/100</b> (Timing/Health)\n- Porter's 5: <b>${porterVal}/100</b> (${porterText})\n\n${narrative}\n\n${entryTxt}`;
+                // Explicitly show the price being used
+                let priceLabel = "Spot Price";
+                if (typeof portfolio !== 'undefined' && portfolio[symbol] && portfolio[symbol].analyzedPrice) {
+                    priceLabel = "Locked Price (from Portfolio)";
+                }
+
+                reply = `<b>${data.name} Analysis</b>\n\n${priceLabel}: <b>₹${data.price.toLocaleString()}</b>\nMy Verdict: <b>${action}</b>\n\n<b>Scores:</b>\n- Fundamental: <b>${score}/100</b> (Timing/Health)\n- Porter's 5: <b>${porterVal}/100</b> (${porterText})\n\n${narrative}\n\n${entryTxt}`;
             }
             break;
 
