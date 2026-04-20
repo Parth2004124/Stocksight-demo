@@ -130,8 +130,8 @@ window.renderCard = function (sym, data, isCached = false, isNewAnalysis = false
     const viewMode = cardViews[sym] || 'fundamental';
 
     // Feature: Remember initial analyzed price and targets to prevent them from moving with spot price
-    // ONLY freeze the price if it's a NEW analysis (i.e., not a local cache render)
-    if (!portfolio[sym].analyzedPrice && data.price > 0 && fScore && isNewAnalysis) {
+    // ONLY freeze the price if the asset is held in the portfolio
+    if (!portfolio[sym].analyzedPrice && data.price > 0 && fScore && isHeld) {
         portfolio[sym].analyzedPrice = data.price;
         portfolio[sym].analyzedLevels = calculateMoreshwarLevels(data.price, fScore, pScore, isHeld);
         portfolio[sym].analyzedState = isHeld ? 'HELD' : 'WATCH';
@@ -177,6 +177,7 @@ window.renderCard = function (sym, data, isCached = false, isNewAnalysis = false
 
         if (fScore.total >= 65) { signal = "BUY"; sigClass = "signal-buy"; }
         else if (fScore.total <= 40) { signal = "SELL"; sigClass = "signal-sell"; }
+        else { signal = "HOLD"; sigClass = "signal-hold"; }
 
         if (pScore && pScore.total > fScore.total) {
             longTermLabel = `<div class="text-[8px] font-semibold bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded border border-purple-200 mt-1 text-right">Long Term Potential</div>`;
