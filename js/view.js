@@ -500,11 +500,11 @@ function renderSignalSummary() {
         if (pct > 0) {
             allocHTML += `
                 <div class="flex items-center text-xs">
-                    <span class="w-24 text-indigo-900 font-medium">${key}</span>
-                    <div class="flex-1 h-2 bg-indigo-50 rounded overflow-hidden mr-2 border border-indigo-100">
+                    <span class="w-24 text-indigo-200 font-medium">${key}</span>
+                    <div class="flex-1 h-2 bg-indigo-900/50 rounded overflow-hidden mr-2 border border-indigo-800/50">
                         <div class="h-full bg-indigo-500" style="width: ${pct}%"></div>
                     </div>
-                    <span class="font-bold text-indigo-700">${pct}%</span>
+                    <span class="font-bold text-indigo-300">${pct}%</span>
                 </div>
             `;
         }
@@ -515,7 +515,7 @@ function renderSignalSummary() {
         portfolioAnalytics.risk.sectors.forEach(([ind, val]) => {
             let sPct = Math.round((val / total) * 100);
             if (sPct > 5) {
-                allocHTML += `<div class="flex justify-between text-[10px] text-indigo-800 mb-1"><span>${ind}</span><span class="font-mono text-indigo-600 font-bold">${sPct}%</span></div>`;
+                allocHTML += `<div class="flex justify-between text-[10px] text-indigo-300 mb-1"><span>${ind}</span><span class="font-mono text-indigo-400 font-bold">${sPct}%</span></div>`;
             }
         });
         allocHTML += `</div>`;
