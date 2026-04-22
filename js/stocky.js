@@ -112,6 +112,7 @@ function mapQueryToIntent(query) {
     }
 
     // 5. GLOBAL QUERIES
+    if ((q.includes('my') || q.includes('is')) && q.includes('portfolio') && q.includes('risk')) return { type: 'PORTFOLIO_SAFE' };
     if (q.includes('health') || (q.includes('my') && q.includes('portfolio'))) return { type: 'SUMMARY' };
     if (q.includes('risk')) return { type: 'RISK' };
     if (q.includes('efficiency')) return { type: 'EFFICIENCY' };
@@ -196,7 +197,7 @@ function getFollowUpSuggestions(intentType, contextData) {
         suggestions = [`What is the target for ${sym}?`, `Is ${sym} risky?`, `Compare ${sym} vs [Other]`];
     } else if (intentType === 'SUMMARY') {
         suggestions = ["Check my risk concentration", "Show efficiency report", "Invest 1 Lakh"];
-    } else if (intentType === 'RISK') {
+    } else if (intentType === 'RISK' || intentType === 'PORTFOLIO_SAFE') {
         suggestions = ["How to improve diversification?", "Show my capital efficiency"];
     } else if (intentType === 'ALLOCATION_SIM') {
         suggestions = ["Why did you choose these?", "Check portfolio health"];
@@ -275,6 +276,42 @@ async function generateStockyResponse(query) {
             if (health > 65) tone = "strong";
             if (health < 40) tone = "struggling";
             reply = `Based on my analysis, your portfolio's structural health is <b>${tone}</b> with a composite score of <b>${health}/100</b>.\n\nThis score reflects the weighted average quality of your holdings.`;
+            break;
+
+        case 'PORTFOLIO_SAFE':
+            const safeHealth = portfolioAnalytics.healthScore || 0;
+            const safeDivScore = portfolioAnalytics.risk.divScore || 100;
+            const sensitivity = portfolioAnalytics.risk.sensitivity || 'Balanced';
+            const alerts = portfolioAnalytics.risk.alerts || [];
+
+            let verdict = "";
+            let sentenceDetail = `Your portfolio has a structural health score of ${safeHealth}/100 and a diversification score of ${safeDivScore}/100, giving it a ${sensitivity.toLowerCase()} volatility profile.`;
+
+            if (safeHealth > 65 && safeDivScore >= 60 && sensitivity !== 'Aggressive' && alerts.length <= 1) {
+                verdict = "Yes, your portfolio appears to be quite safe and structurally sound.";
+            } else if (safeHealth < 40 || safeDivScore < 40 || sensitivity === 'Aggressive' || alerts.length > 2) {
+                verdict = "No, your portfolio currently carries elevated risks that need attention.";
+            } else {
+                verdict = "Your portfolio is moderately safe, though it carries some exposure to risk.";
+            }
+
+            let textReply = `<b>${verdict}</b> ${sentenceDetail}`;
+
+            let suggestion = "";
+            const badTraps = (portfolioAnalytics.efficiency || []).filter(e => e.type === 'bad');
+            if (alerts.length > 0) {
+                suggestion = `To improve safety, my top suggestion is to address this risk alert: ${alerts[0].toLowerCase()}`;
+            } else if (badTraps.length > 0) {
+                suggestion = `While relatively stable, my suggestion is to fix your capital efficiency: ${badTraps[0].text.toLowerCase()}`;
+            } else if (safeHealth <= 65) {
+                suggestion = `My main suggestion is to swap out some of your lower-scoring holdings to boost your overall health score above 65`;
+            } else if (safeDivScore < 80) {
+                suggestion = `For added safety, my suggestion is to diversify your capital slightly further across different sectors`;
+            } else {
+                suggestion = `Everything looks excellent, so my only suggestion is to maintain this balanced strategy`;
+            }
+
+            reply = `${textReply}\n\n💡 <b>Recommendation:</b> ${suggestion}.`;
             break;
 
         case 'RISK':
